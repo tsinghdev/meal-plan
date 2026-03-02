@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Meal Plan">
+<title>Weekly Meal Plan</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1e1e24;--surface:#2a2a32;--surfaceHover:#32323c;
+  --border:#3a3a45;--borderLight:#2f2f3a;
+  --text:#e0ddd8;--textMuted:#9a9690;--textDim:#706c66;
+  --accent:#7ca8d4;--accentBg:#1e2d3d;
+  --green:#6fcf97;--greenBg:#1e3a2f;
+  --red:#e07070;--redBg:#3a2020;
+}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;-webkit-tap-highlight-color:transparent}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:10}
+.header h1{font-size:18px;font-weight:700}
+.header p{font-size:11px;color:var(--textMuted);margin-top:2px}
+.tab-bar{display:flex;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:50px;z-index:10}
+.tab-btn{flex:1;padding:8px 0;text-align:center;font-size:11px;font-weight:500;color:var(--textMuted);background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer}
+.tab-btn.active{color:var(--accent);background:var(--accentBg);border-bottom-color:var(--accent)}
+.tab-btn .icon{font-size:16px;display:block;margin-bottom:2px}
+.content{padding:16px;padding-bottom:80px;max-width:520px;margin:0 auto}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px}
+.card-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border:none;background:none;width:100%;text-align:left;color:var(--text)}
+.day-name{font-size:14px;font-weight:600}
+.tag{display:inline-block;margin-top:4px;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:500}
+.shop-tag{padding:2px 8px;border-radius:99px;font-size:11px;font-weight:500;background:var(--redBg);color:var(--red)}
+.arrow{color:var(--textDim);font-size:16px}
+.card-body{padding:0 16px 16px;border-top:1px solid var(--borderLight);display:none}
+.card-body.open{display:block}
+.section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--textMuted);margin:12px 0 8px}
+.task-item{display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:13px}
+.task-dot{color:var(--textDim);margin-top:1px}
+.meal-row{display:flex;gap:8px;margin-bottom:6px}
+.meal-label{font-size:11px;font-weight:500;color:var(--textMuted);width:48px;flex-shrink:0;padding-top:2px}
+.meal-text{font-size:13px}
+.progress-bar{background:var(--accentBg);border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.progress-bar span{font-size:13px;font-weight:500;color:var(--accent)}
+.progress-bar .count{font-weight:700}
+.grocery-cat-header{padding:12px 16px;border-bottom:1px solid var(--borderLight);font-size:14px;font-weight:600}
+.grocery-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--borderLight);cursor:pointer;border:none;background:none;width:100%;text-align:left;color:var(--text)}
+.grocery-item:last-child{border-bottom:none}
+.checkbox{width:20px;height:20px;border-radius:6px;border:2px solid var(--textDim);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700;transition:all 0.15s}
+.checkbox.checked{background:var(--green);border-color:var(--green);color:var(--bg)}
+.grocery-text{font-size:13px;transition:all 0.15s}
+.grocery-text.checked{color:var(--textDim);text-decoration:line-through}
+.recipe-meta{display:flex;gap:12px;margin-top:4px}
+.recipe-meta span{font-size:11px;color:var(--textMuted)}
+.step{display:flex;gap:12px;margin-bottom:8px}
+.step-num{font-size:11px;font-weight:700;color:var(--accent);width:16px;flex-shrink:0;padding-top:2px}
+.step-text{font-size:13px}
+.nutrient-name{font-size:14px;font-weight:600}
+.nutrient-src{font-size:11px;color:var(--textMuted);margin-top:2px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Weekly Meal Plan</h1>
+  <p>For 2 people &bull; Batch cooking strategy</p>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="schedule"><span class="icon">📅</span>Schedule</button>
+  <button class="tab-btn" data-tab="grocery"><span class="icon">🛒</span>Groceries</button>
+  <button class="tab-btn" data-tab="recipes"><span class="icon">👨‍🍳</span>Recipes</button>
+  <button class="tab-btn" data-tab="nutrients"><span class="icon">💊</span>Nutrients</button>
+</div>
+
+<div class="content">
+
+<!-- SCHEDULE -->
+<div class="tab-content active" id="schedule">
+
+  <div class="card">
+    <button class="card-header" onclick="toggleCard(this)">
+      <div><div class="day-name">Sunday</div><span class="tag" style="background:#4a3728;color:#f0a860">Batch Cook</span></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="shop-tag">🛒 Shop</span><span class="arrow">▼</span></div>
+    </button>
+    <div class="card-body">
+      <div class="section-label">Tasks</div>
+      <div class="task-item"><span class="task-dot">•</span>Grocery shop for the week</div>
+      <div class="task-item"><span class="task-dot">•</span>Cook Lentil & Sweet Potato Stew (big batch)</div>
+      <div class="task-item"><span class="task-dot">•</span>Roast Chicken Thighs + roasted veg (big batch)</div>
+      <div class="task-item"><span class="task-dot">•</span>Prep quinoa or brown rice</div>
+      <div class="task-item"><span class="task-dot">•</span>Wash & chop salad greens for Mon–Tue</div>
+      <div class="section-label">Meals</div>
+      <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Roast Chicken Thighs with roasted veg & salad</span></div>
+      <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Lentil & Sweet Potato Stew with crusty bread</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <button class="card-header" onclick="toggleCard(this)">
+      <div><div class="day-name">Monday</div><span class="tag" style="background:#1e3a2f;color:#6fcf97">No Cook</span></div>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="card-body">
+      <div class="section-label">Tasks</div>
+      <div class="task-item"><span class="task-dot">•</span>Reheat leftovers only</div>
+      <div class="section-label">Meals</div>
+      <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Lentil & Sweet Potato Stew (leftover)</span></div>
+      <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Roast Chicken Thighs with quinoa & salad</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <button class="card-header" onclick="toggleCard(this)">
+      <div><div class="day-name">Tuesday</div><span class="tag" style="background:#1e3a2f;color:#6fcf97">No Cook</span></div>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="card-body">
+      <div class="section-label">Tasks</div>
+      <div class="task-item"><span class="task-dot">•</span>Reheat leftovers only</div>
+      <div class="section-label">Meals</div>
+      <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Roast Chicken with leftover veg wrap</span></div>
+      <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Lentil & Sweet Potato Stew (last portion)</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <button class="card-header" onclick="toggleCard(this)">
+      <div><div class="day-name">Wednesday</div><span class="tag" style="background:#1e2d3d;color:#6bb3e0">Light Cook</span></div>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="card-body">
+      <div class="section-label">Tasks</div>
+      <div class="task-item"><span class="task-dot">•</span>Cook Stuffed Green Peppers (makes 2 days)</div>
+      <div class="task-item"><span class="task-dot">•</span>Quick side salad or steamed greens</div>
+      <div class="section-label">Meals</div>
+      <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Sardines/Mackerel on toast with mixed salad</span></div>
+      <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Stuffed Green Peppers with side salad</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <button class="card-header" onclick="toggleCard(this)">
+      <div><div class="day-name">Thursday</div><span class="tag" style="background:#1e3a2f;color:#6fcf97">No Cook</span></div>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="card-body">
+      <div class="section-label">Tasks</div>
+      <div class="task-item"><span class="task-dot">•</span>Reheat Wed leftovers</div>
+      <div class="section-label">Meals</div>
+      <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Stuffed Green Peppers (leftover)</span></div>
+      <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Sardines/Mackerel with quinoa & greens</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <button class="card-header" onclick="toggleCard(this)">
+      <div><div class="day-name">Friday</div><span class="tag" style="background:#3a3520;color:#e0c560">Cook</span></div>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="card-body">
+      <div class="section-label">Tasks</div>
+      <div class="task-item"><span class="task-dot">•</span>Bake Salmon with quinoa & roasted veg</div>
+      <div class="section-label">Meals</div>
+      <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Light salad or leftovers from Thu</span></div>
+      <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Baked Salmon with quinoa & roasted veg</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <button class="card-header" onclick="toggleCard(this)">
+      <div><div class="day-name">Saturday</div><span class="tag" style="background:#3a3520;color:#e0c560">Cook</span></div>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="card-body">
+      <div class="section-label">Tasks</div>
+      <div class="task-item"><span class="task-dot">•</span>Sheet Pan Chicken with seasonal veg</div>
+      <div class="task-item"><span class="task-dot">•</span>Optional: prep anything for Sunday batch</div>
+      <div class="section-label">Meals</div>
+      <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Salmon leftovers or simple eggs & greens</span></div>
+      <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Sheet Pan Chicken with seasonal veg</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- GROCERY -->
+<div class="tab-content" id="grocery">
+  <div class="progress-bar">
+    <span>Shopping progress</span>
+    <span class="count" id="grocery-count">0 / 25 items</span>
+  </div>
+
+  <div class="card">
+    <div class="grocery-cat-header">🥩 Proteins</div>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Chicken thighs (bone-in, skin-on) — ~1.5 kg</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Salmon fillets — 2 pieces</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Canned sardines or mackerel — 2 tins</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Eggs — 1 dozen</span></button>
+  </div>
+
+  <div class="card">
+    <div class="grocery-cat-header">🌾 Grains & Legumes</div>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Brown/green lentils — 300g</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Quinoa — 300g</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Brown rice (optional backup) — 300g</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Crusty bread / wraps</span></button>
+  </div>
+
+  <div class="card">
+    <div class="grocery-cat-header">🥬 Vegetables</div>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Sweet potatoes — 3–4 medium</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Green bell peppers — 4 large</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Mixed salad greens — 2 bags</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Seasonal roasting veg (carrots, courgette, broccoli)</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Onions — 4–5</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Garlic — 1 bulb</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Tomatoes — 6 or 1 can diced</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Spinach or kale — 1 bunch</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Lemons — 2</span></button>
+  </div>
+
+  <div class="card">
+    <div class="grocery-cat-header">🫒 Pantry & Oils</div>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Olive oil</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Cumin, paprika, turmeric, oregano</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Salt & pepper</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Vegetable or chicken stock — 500ml</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Soy sauce or tamari</span></button>
+  </div>
+
+  <div class="card">
+    <div class="grocery-cat-header">🧀 Dairy & Other</div>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Feta or goat cheese (for peppers)</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Greek yogurt (optional)</span></button>
+    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Nuts/seeds (walnuts, pumpkin seeds)</span></button>
+  </div>
+</div>
+
+<!-- RECIPES -->
+<div class="tab-content" id="recipes">
+
+  <div class="card">
+    <button class="card-header" onclick="toggleCard(this)">
+      <div><div class="day-name">Lentil & Sweet Potato Stew</div><div class="recipe-meta"><span>📅 Sunday</span><span>⏱ 45 min</span><span>🍽 4–6 portions</span></div></div>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="card-body">
+      <div class="step"><span class="step-num">1</span><span class="step-text">Dice 3 sweet potatoes and 2 onions. Mince 3 cloves garlic.</span></div>
+      <div class="step"><span class="step-num">2</span><span class="step-text">Heat olive oil in a large pot. Sauté onions 5 min, add garlic 1 min.</span></div>
+      <div class="step"><span class="step-num">3</span><span class="step-text">Add 300g lentils, diced sweet potato, 1 can diced tomatoes, 500ml stock.</span></div>
+      <div class="step"><span class="step-num">4</span><span class="step-text">Season with cumin, turmeric, paprika, salt & pepper.</span></div>
+      <div class="step"><span class="step-num">5</span><span class="step-text">Bring to boil, reduce heat, simmer 30–35 min until lentils are tender.</span></div>
+      <div class="step"><span class="step-num">6</span><span class="step-text">Adjust seasoning. Stir in a handful of spinach if desired.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <button class="card-header" onclick="toggleCard(this)">
+      <div><div class="day-name">Roast Chicken Thighs & Veg</div><div class="recipe-meta"><span>📅 Sunday</span><span>⏱ 50 min</span><span>🍽 4 portions</span></div></div>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="card-body">
+      <div class="step"><span class="step-num">1</span><span class="step-text">Preheat oven to 200°C / 400°F.</span></div>
+      <div class="step"><span class="step-num">2</span><span class="step-text">Toss ~1.5kg chicken thighs with olive oil, paprika, oregano, salt & pepper.</span></div>
+      <div class="step"><span class="step-num">3</span><span class="step-text">Chop seasonal veg (carrots, courgette, broccoli). Toss with olive oil & salt.</span></div>
+      <div class="step"><span class="step-num">4</span><span class="step-text">Spread chicken and veg on a large baking tray.</span></div>
+      <div class="step"><span class="step-num">5</span><span class="step-text">Roast 40–45 min until chicken is golden and cooked through (75°C internal).</span></div>
+      <div class="step"><span class="step-num">6</span><span class="step-text">Rest 5 min before serving.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <button class="card-header" onclick="toggleCard(this)">
+      <div><div class="day-name">Stuffed Green Peppers</div><div class="recipe-meta"><span>📅 Wednesday</span><span>⏱ 40 min</span><span>🍽 4 peppers (2 days)</span></div></div>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="card-body">
+      <div class="step"><span class="step-num">1</span><span class="step-text">Preheat oven to 190°C / 375°F.</span></div>
+      <div class="step"><span class="step-num">2</span><span class="step-text">Halve 4 peppers, remove seeds. Place cut-side up in a baking dish.</span></div>
+      <div class="step"><span class="step-num">3</span><span class="step-text">Mix cooked quinoa with diced tomato, crumbled feta, spinach, garlic, cumin.</span></div>
+      <div class="step"><span class="step-num">4</span><span class="step-text">Stuff peppers with the mixture. Drizzle olive oil on top.</span></div>
+      <div class="step"><span class="step-num">5</span><span class="step-text">Bake 25–30 min until peppers are tender.</span></div>
+      <div class="step"><span class="step-num">6</span><span class="step-text">Serve with a side salad or steamed greens.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <button class="card-header" onclick="toggleCard(this)">
+      <div><div class="day-name">Baked Salmon</div><div class="recipe-meta"><span>📅 Friday</span><span>⏱ 25 min</span><span>🍽 2 portions</span></div></div>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="card-body">
+      <div class="step"><span class="step-num">1</span><span class="step-text">Preheat oven to 200°C / 400°F.</span></div>
+      <div class="step"><span class="step-num">2</span><span class="step-text">Place salmon fillets on a lined baking tray.</span></div>
+      <div class="step"><span class="step-num">3</span><span class="step-text">Season with olive oil, lemon juice, garlic, salt & pepper.</span></div>
+      <div class="step"><span class="step-num">4</span><span class="step-text">Arrange chopped veg around the salmon.</span></div>
+      <div class="step"><span class="step-num">5</span><span class="step-text">Bake 15–18 min until salmon flakes easily.</span></div>
+      <div class="step"><span class="step-num">6</span><span class="step-text">Serve over quinoa with roasted veg.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <button class="card-header" onclick="toggleCard(this)">
+      <div><div class="day-name">Sheet Pan Chicken</div><div class="recipe-meta"><span>📅 Saturday</span><span>⏱ 40 min</span><span>🍽 2–3 portions</span></div></div>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="card-body">
+      <div class="step"><span class="step-num">1</span><span class="step-text">Preheat oven to 200°C / 400°F.</span></div>
+      <div class="step"><span class="step-num">2</span><span class="step-text">Cut chicken thighs into pieces. Toss with olive oil, soy sauce, garlic, paprika.</span></div>
+      <div class="step"><span class="step-num">3</span><span class="step-text">Chop seasonal veg into bite-sized pieces. Toss with olive oil.</span></div>
+      <div class="step"><span class="step-num">4</span><span class="step-text">Spread everything on a large sheet pan in a single layer.</span></div>
+      <div class="step"><span class="step-num">5</span><span class="step-text">Roast 30–35 min, tossing halfway, until chicken is cooked through.</span></div>
+      <div class="step"><span class="step-num">6</span><span class="step-text">Squeeze lemon juice over before serving.</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NUTRIENTS -->
+<div class="tab-content" id="nutrients">
+  <p style="font-size:11px;color:var(--textMuted);margin-bottom:12px">Key nutrients covered by this meal plan and where they come from.</p>
+  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Folate</div><div class="nutrient-src">Lentils, spinach, kale, green peppers</div></div></div>
+  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Omega-3s</div><div class="nutrient-src">Salmon, sardines, mackerel, walnuts</div></div></div>
+  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Zinc</div><div class="nutrient-src">Chicken thighs, pumpkin seeds, lentils</div></div></div>
+  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Iron</div><div class="nutrient-src">Lentils, spinach, chicken</div></div></div>
+  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Vitamin D</div><div class="nutrient-src">Salmon, sardines, eggs</div></div></div>
+  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Vitamin B12</div><div class="nutrient-src">Salmon, sardines, eggs, chicken</div></div></div>
+  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Vitamin C</div><div class="nutrient-src">Bell peppers, tomatoes, lemon</div></div></div>
+  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Vitamin E</div><div class="nutrient-src">Nuts, seeds, olive oil</div></div></div>
+  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Selenium</div><div class="nutrient-src">Eggs, chicken, brown rice</div></div></div>
+  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Coenzyme Q10</div><div class="nutrient-src">Chicken thighs, sardines</div></div></div>
+  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Antioxidants</div><div class="nutrient-src">Sweet potato, kale, broccoli, berries</div></div></div>
+  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Fiber</div><div class="nutrient-src">Lentils, sweet potato, quinoa, veg</div></div></div>
+</div>
+
+</div>
+
+<script>
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+// Expandable cards
+function toggleCard(header) {
+  const body = header.nextElementSibling;
+  const arrow = header.querySelector('.arrow');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open');
+  arrow.textContent = isOpen ? '▼' : '▲';
+}
+
+// Grocery checkboxes
+let checkedCount = 0;
+const totalItems = document.querySelectorAll('.grocery-item').length;
+
+function toggleGrocery(btn) {
+  const cb = btn.querySelector('.checkbox');
+  const txt = btn.querySelector('.grocery-text');
+  const isChecked = cb.classList.contains('checked');
+  cb.classList.toggle('checked');
+  txt.classList.toggle('checked');
+  if (isChecked) {
+    cb.textContent = '';
+    checkedCount--;
+  } else {
+    cb.textContent = '✓';
+    checkedCount++;
+  }
+  document.getElementById('grocery-count').textContent = checkedCount + ' / ' + totalItems + ' items';
+}
+</script>
+
+</body>
+</html>
