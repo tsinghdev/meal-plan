@@ -21,7 +21,10 @@ body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,
 .header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:10}
 .header h1{font-size:18px;font-weight:700}
 .header p{font-size:11px;color:var(--textMuted);margin-top:2px}
-.tab-bar{display:flex;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:50px;z-index:10}
+.week-selector{display:flex;gap:6px;padding:12px 16px;background:var(--bg);position:sticky;top:50px;z-index:9;border-bottom:1px solid var(--border)}
+.week-btn{flex:1;padding:8px 0;text-align:center;font-size:12px;font-weight:600;color:var(--textMuted);background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer}
+.week-btn.active{color:var(--accent);background:var(--accentBg);border-color:var(--accent)}
+.tab-bar{display:flex;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:98px;z-index:10}
 .tab-btn{flex:1;padding:8px 0;text-align:center;font-size:11px;font-weight:500;color:var(--textMuted);background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer}
 .tab-btn.active{color:var(--accent);background:var(--accentBg);border-bottom-color:var(--accent)}
 .tab-btn .icon{font-size:16px;display:block;margin-bottom:2px}
@@ -44,7 +47,7 @@ body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,
 .progress-bar span{font-size:13px;font-weight:500;color:var(--accent)}
 .progress-bar .count{font-weight:700}
 .grocery-cat-header{padding:12px 16px;border-bottom:1px solid var(--borderLight);font-size:14px;font-weight:600}
-.grocery-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--borderLight);cursor:pointer;border:none;background:none;width:100%;text-align:left;color:var(--text)}
+.grocery-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--borderLight);cursor:pointer;border-left:none;border-right:none;border-top:none;background:none;width:100%;text-align:left;color:var(--text)}
 .grocery-item:last-child{border-bottom:none}
 .checkbox{width:20px;height:20px;border-radius:6px;border:2px solid var(--textDim);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700;transition:all 0.15s}
 .checkbox.checked{background:var(--green);border-color:var(--green);color:var(--bg)}
@@ -64,8 +67,15 @@ body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,
 <body>
 
 <div class="header">
-  <h1>Weekly Meal Plan</h1>
-  <p>For 2 people &bull; Batch cooking strategy</p>
+  <h1>4-Week Meal Plan</h1>
+  <p>For 2 people &bull; Batch cooking strategy &bull; No red meat / No shellfish</p>
+</div>
+
+<div class="week-selector" id="week-selector">
+  <button class="week-btn active" data-week="1" onclick="switchWeek(1)">Week 1</button>
+  <button class="week-btn" data-week="2" onclick="switchWeek(2)">Week 2</button>
+  <button class="week-btn" data-week="3" onclick="switchWeek(3)">Week 3</button>
+  <button class="week-btn" data-week="4" onclick="switchWeek(4)">Week 4</button>
 </div>
 
 <div class="tab-bar">
@@ -75,281 +85,317 @@ body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,
   <button class="tab-btn" data-tab="nutrients"><span class="icon">💊</span>Nutrients</button>
 </div>
 
-<div class="content">
-
-<!-- SCHEDULE -->
-<div class="tab-content active" id="schedule">
-
-  <div class="card">
-    <button class="card-header" onclick="toggleCard(this)">
-      <div><div class="day-name">Sunday</div><span class="tag" style="background:#4a3728;color:#f0a860">Batch Cook</span></div>
-      <div style="display:flex;align-items:center;gap:8px"><span class="shop-tag">🛒 Shop</span><span class="arrow">▼</span></div>
-    </button>
-    <div class="card-body">
-      <div class="section-label">Tasks</div>
-      <div class="task-item"><span class="task-dot">•</span>Grocery shop for the week</div>
-      <div class="task-item"><span class="task-dot">•</span>Cook Lentil & Sweet Potato Stew (big batch)</div>
-      <div class="task-item"><span class="task-dot">•</span>Roast Chicken Thighs + roasted veg (big batch)</div>
-      <div class="task-item"><span class="task-dot">•</span>Prep quinoa or brown rice</div>
-      <div class="task-item"><span class="task-dot">•</span>Wash & chop salad greens for Mon–Tue</div>
-      <div class="section-label">Meals</div>
-      <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Roast Chicken Thighs with roasted veg & salad</span></div>
-      <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Lentil & Sweet Potato Stew with crusty bread</span></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <button class="card-header" onclick="toggleCard(this)">
-      <div><div class="day-name">Monday</div><span class="tag" style="background:#1e3a2f;color:#6fcf97">No Cook</span></div>
-      <span class="arrow">▼</span>
-    </button>
-    <div class="card-body">
-      <div class="section-label">Tasks</div>
-      <div class="task-item"><span class="task-dot">•</span>Reheat leftovers only</div>
-      <div class="section-label">Meals</div>
-      <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Lentil & Sweet Potato Stew (leftover)</span></div>
-      <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Roast Chicken Thighs with quinoa & salad</span></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <button class="card-header" onclick="toggleCard(this)">
-      <div><div class="day-name">Tuesday</div><span class="tag" style="background:#1e3a2f;color:#6fcf97">No Cook</span></div>
-      <span class="arrow">▼</span>
-    </button>
-    <div class="card-body">
-      <div class="section-label">Tasks</div>
-      <div class="task-item"><span class="task-dot">•</span>Reheat leftovers only</div>
-      <div class="section-label">Meals</div>
-      <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Roast Chicken with leftover veg wrap</span></div>
-      <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Lentil & Sweet Potato Stew (last portion)</span></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <button class="card-header" onclick="toggleCard(this)">
-      <div><div class="day-name">Wednesday</div><span class="tag" style="background:#1e2d3d;color:#6bb3e0">Light Cook</span></div>
-      <span class="arrow">▼</span>
-    </button>
-    <div class="card-body">
-      <div class="section-label">Tasks</div>
-      <div class="task-item"><span class="task-dot">•</span>Cook Stuffed Green Peppers (makes 2 days)</div>
-      <div class="task-item"><span class="task-dot">•</span>Quick side salad or steamed greens</div>
-      <div class="section-label">Meals</div>
-      <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Sardines/Mackerel on toast with mixed salad</span></div>
-      <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Stuffed Green Peppers with side salad</span></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <button class="card-header" onclick="toggleCard(this)">
-      <div><div class="day-name">Thursday</div><span class="tag" style="background:#1e3a2f;color:#6fcf97">No Cook</span></div>
-      <span class="arrow">▼</span>
-    </button>
-    <div class="card-body">
-      <div class="section-label">Tasks</div>
-      <div class="task-item"><span class="task-dot">•</span>Reheat Wed leftovers</div>
-      <div class="section-label">Meals</div>
-      <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Stuffed Green Peppers (leftover)</span></div>
-      <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Sardines/Mackerel with quinoa & greens</span></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <button class="card-header" onclick="toggleCard(this)">
-      <div><div class="day-name">Friday</div><span class="tag" style="background:#3a3520;color:#e0c560">Cook</span></div>
-      <span class="arrow">▼</span>
-    </button>
-    <div class="card-body">
-      <div class="section-label">Tasks</div>
-      <div class="task-item"><span class="task-dot">•</span>Bake Salmon with quinoa & roasted veg</div>
-      <div class="section-label">Meals</div>
-      <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Light salad or leftovers from Thu</span></div>
-      <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Baked Salmon with quinoa & roasted veg</span></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <button class="card-header" onclick="toggleCard(this)">
-      <div><div class="day-name">Saturday</div><span class="tag" style="background:#3a3520;color:#e0c560">Cook</span></div>
-      <span class="arrow">▼</span>
-    </button>
-    <div class="card-body">
-      <div class="section-label">Tasks</div>
-      <div class="task-item"><span class="task-dot">•</span>Sheet Pan Chicken with seasonal veg</div>
-      <div class="task-item"><span class="task-dot">•</span>Optional: prep anything for Sunday batch</div>
-      <div class="section-label">Meals</div>
-      <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Salmon leftovers or simple eggs & greens</span></div>
-      <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Sheet Pan Chicken with seasonal veg</span></div>
-    </div>
-  </div>
-
-</div>
-
-<!-- GROCERY -->
-<div class="tab-content" id="grocery">
-  <div class="progress-bar">
-    <span>Shopping progress</span>
-    <span class="count" id="grocery-count">0 / 25 items</span>
-  </div>
-
-  <div class="card">
-    <div class="grocery-cat-header">🥩 Proteins</div>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Chicken thighs (bone-in, skin-on) — ~1.5 kg</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Salmon fillets — 2 pieces</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Canned sardines or mackerel — 2 tins</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Eggs — 1 dozen</span></button>
-  </div>
-
-  <div class="card">
-    <div class="grocery-cat-header">🌾 Grains & Legumes</div>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Brown/green lentils — 300g</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Quinoa — 300g</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Brown rice (optional backup) — 300g</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Crusty bread / wraps</span></button>
-  </div>
-
-  <div class="card">
-    <div class="grocery-cat-header">🥬 Vegetables</div>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Sweet potatoes — 3–4 medium</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Green bell peppers — 4 large</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Mixed salad greens — 2 bags</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Seasonal roasting veg (carrots, courgette, broccoli)</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Onions — 4–5</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Garlic — 1 bulb</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Tomatoes — 6 or 1 can diced</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Spinach or kale — 1 bunch</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Lemons — 2</span></button>
-  </div>
-
-  <div class="card">
-    <div class="grocery-cat-header">🫒 Pantry & Oils</div>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Olive oil</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Cumin, paprika, turmeric, oregano</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Salt & pepper</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Vegetable or chicken stock — 500ml</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Soy sauce or tamari</span></button>
-  </div>
-
-  <div class="card">
-    <div class="grocery-cat-header">🧀 Dairy & Other</div>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Feta or goat cheese (for peppers)</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Greek yogurt (optional)</span></button>
-    <button class="grocery-item" onclick="toggleGrocery(this)"><div class="checkbox"></div><span class="grocery-text">Nuts/seeds (walnuts, pumpkin seeds)</span></button>
-  </div>
-</div>
-
-<!-- RECIPES -->
-<div class="tab-content" id="recipes">
-
-  <div class="card">
-    <button class="card-header" onclick="toggleCard(this)">
-      <div><div class="day-name">Lentil & Sweet Potato Stew</div><div class="recipe-meta"><span>📅 Sunday</span><span>⏱ 45 min</span><span>🍽 4–6 portions</span></div></div>
-      <span class="arrow">▼</span>
-    </button>
-    <div class="card-body">
-      <div class="step"><span class="step-num">1</span><span class="step-text">Dice 3 sweet potatoes and 2 onions. Mince 3 cloves garlic.</span></div>
-      <div class="step"><span class="step-num">2</span><span class="step-text">Heat olive oil in a large pot. Sauté onions 5 min, add garlic 1 min.</span></div>
-      <div class="step"><span class="step-num">3</span><span class="step-text">Add 300g lentils, diced sweet potato, 1 can diced tomatoes, 500ml stock.</span></div>
-      <div class="step"><span class="step-num">4</span><span class="step-text">Season with cumin, turmeric, paprika, salt & pepper.</span></div>
-      <div class="step"><span class="step-num">5</span><span class="step-text">Bring to boil, reduce heat, simmer 30–35 min until lentils are tender.</span></div>
-      <div class="step"><span class="step-num">6</span><span class="step-text">Adjust seasoning. Stir in a handful of spinach if desired.</span></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <button class="card-header" onclick="toggleCard(this)">
-      <div><div class="day-name">Roast Chicken Thighs & Veg</div><div class="recipe-meta"><span>📅 Sunday</span><span>⏱ 50 min</span><span>🍽 4 portions</span></div></div>
-      <span class="arrow">▼</span>
-    </button>
-    <div class="card-body">
-      <div class="step"><span class="step-num">1</span><span class="step-text">Preheat oven to 200°C / 400°F.</span></div>
-      <div class="step"><span class="step-num">2</span><span class="step-text">Toss ~1.5kg chicken thighs with olive oil, paprika, oregano, salt & pepper.</span></div>
-      <div class="step"><span class="step-num">3</span><span class="step-text">Chop seasonal veg (carrots, courgette, broccoli). Toss with olive oil & salt.</span></div>
-      <div class="step"><span class="step-num">4</span><span class="step-text">Spread chicken and veg on a large baking tray.</span></div>
-      <div class="step"><span class="step-num">5</span><span class="step-text">Roast 40–45 min until chicken is golden and cooked through (75°C internal).</span></div>
-      <div class="step"><span class="step-num">6</span><span class="step-text">Rest 5 min before serving.</span></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <button class="card-header" onclick="toggleCard(this)">
-      <div><div class="day-name">Stuffed Green Peppers</div><div class="recipe-meta"><span>📅 Wednesday</span><span>⏱ 40 min</span><span>🍽 4 peppers (2 days)</span></div></div>
-      <span class="arrow">▼</span>
-    </button>
-    <div class="card-body">
-      <div class="step"><span class="step-num">1</span><span class="step-text">Preheat oven to 190°C / 375°F.</span></div>
-      <div class="step"><span class="step-num">2</span><span class="step-text">Halve 4 peppers, remove seeds. Place cut-side up in a baking dish.</span></div>
-      <div class="step"><span class="step-num">3</span><span class="step-text">Mix cooked quinoa with diced tomato, crumbled feta, spinach, garlic, cumin.</span></div>
-      <div class="step"><span class="step-num">4</span><span class="step-text">Stuff peppers with the mixture. Drizzle olive oil on top.</span></div>
-      <div class="step"><span class="step-num">5</span><span class="step-text">Bake 25–30 min until peppers are tender.</span></div>
-      <div class="step"><span class="step-num">6</span><span class="step-text">Serve with a side salad or steamed greens.</span></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <button class="card-header" onclick="toggleCard(this)">
-      <div><div class="day-name">Baked Salmon</div><div class="recipe-meta"><span>📅 Friday</span><span>⏱ 25 min</span><span>🍽 2 portions</span></div></div>
-      <span class="arrow">▼</span>
-    </button>
-    <div class="card-body">
-      <div class="step"><span class="step-num">1</span><span class="step-text">Preheat oven to 200°C / 400°F.</span></div>
-      <div class="step"><span class="step-num">2</span><span class="step-text">Place salmon fillets on a lined baking tray.</span></div>
-      <div class="step"><span class="step-num">3</span><span class="step-text">Season with olive oil, lemon juice, garlic, salt & pepper.</span></div>
-      <div class="step"><span class="step-num">4</span><span class="step-text">Arrange chopped veg around the salmon.</span></div>
-      <div class="step"><span class="step-num">5</span><span class="step-text">Bake 15–18 min until salmon flakes easily.</span></div>
-      <div class="step"><span class="step-num">6</span><span class="step-text">Serve over quinoa with roasted veg.</span></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <button class="card-header" onclick="toggleCard(this)">
-      <div><div class="day-name">Sheet Pan Chicken</div><div class="recipe-meta"><span>📅 Saturday</span><span>⏱ 40 min</span><span>🍽 2–3 portions</span></div></div>
-      <span class="arrow">▼</span>
-    </button>
-    <div class="card-body">
-      <div class="step"><span class="step-num">1</span><span class="step-text">Preheat oven to 200°C / 400°F.</span></div>
-      <div class="step"><span class="step-num">2</span><span class="step-text">Cut chicken thighs into pieces. Toss with olive oil, soy sauce, garlic, paprika.</span></div>
-      <div class="step"><span class="step-num">3</span><span class="step-text">Chop seasonal veg into bite-sized pieces. Toss with olive oil.</span></div>
-      <div class="step"><span class="step-num">4</span><span class="step-text">Spread everything on a large sheet pan in a single layer.</span></div>
-      <div class="step"><span class="step-num">5</span><span class="step-text">Roast 30–35 min, tossing halfway, until chicken is cooked through.</span></div>
-      <div class="step"><span class="step-num">6</span><span class="step-text">Squeeze lemon juice over before serving.</span></div>
-    </div>
-  </div>
-
-</div>
-
-<!-- NUTRIENTS -->
-<div class="tab-content" id="nutrients">
-  <p style="font-size:11px;color:var(--textMuted);margin-bottom:12px">Key nutrients covered by this meal plan and where they come from.</p>
-  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Folate</div><div class="nutrient-src">Lentils, spinach, kale, green peppers</div></div></div>
-  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Omega-3s</div><div class="nutrient-src">Salmon, sardines, mackerel, walnuts</div></div></div>
-  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Zinc</div><div class="nutrient-src">Chicken thighs, pumpkin seeds, lentils</div></div></div>
-  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Iron</div><div class="nutrient-src">Lentils, spinach, chicken</div></div></div>
-  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Vitamin D</div><div class="nutrient-src">Salmon, sardines, eggs</div></div></div>
-  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Vitamin B12</div><div class="nutrient-src">Salmon, sardines, eggs, chicken</div></div></div>
-  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Vitamin C</div><div class="nutrient-src">Bell peppers, tomatoes, lemon</div></div></div>
-  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Vitamin E</div><div class="nutrient-src">Nuts, seeds, olive oil</div></div></div>
-  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Selenium</div><div class="nutrient-src">Eggs, chicken, brown rice</div></div></div>
-  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Coenzyme Q10</div><div class="nutrient-src">Chicken thighs, sardines</div></div></div>
-  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Antioxidants</div><div class="nutrient-src">Sweet potato, kale, broccoli, berries</div></div></div>
-  <div class="card" style="margin-bottom:8px"><div style="padding:12px 16px"><div class="nutrient-name">Fiber</div><div class="nutrient-src">Lentils, sweet potato, quinoa, veg</div></div></div>
-</div>
-
-</div>
+<div class="content" id="app-content"></div>
 
 <script>
-// Tab switching
+const WEEKS = {
+1: {
+  schedule: [
+    { day:"Sunday", tag:"Batch Cook", tagBg:"#4a3728", tagText:"#f0a860", shop:true,
+      tasks:["Grocery shop for the week","Cook Lentil & Sweet Potato Stew (big batch)","Roast Chicken Thighs + roasted veg (big batch)","Prep quinoa or brown rice","Wash & chop salad greens for Mon–Tue"],
+      meals:{lunch:"Roast Chicken Thighs with roasted veg & salad",dinner:"Lentil & Sweet Potato Stew with crusty bread"}},
+    { day:"Monday", tag:"No Cook", tagBg:"#1e3a2f", tagText:"#6fcf97", shop:false,
+      tasks:["Reheat leftovers only"],
+      meals:{lunch:"Lentil & Sweet Potato Stew (leftover)",dinner:"Roast Chicken Thighs with quinoa & salad"}},
+    { day:"Tuesday", tag:"No Cook", tagBg:"#1e3a2f", tagText:"#6fcf97", shop:false,
+      tasks:["Reheat leftovers only"],
+      meals:{lunch:"Roast Chicken with leftover veg wrap",dinner:"Lentil & Sweet Potato Stew (last portion)"}},
+    { day:"Wednesday", tag:"Light Cook", tagBg:"#1e2d3d", tagText:"#6bb3e0", shop:false,
+      tasks:["Cook Stuffed Green Peppers (makes 2 days)","Quick side salad or steamed greens"],
+      meals:{lunch:"Sardines/Mackerel on toast with mixed salad",dinner:"Stuffed Green Peppers with side salad"}},
+    { day:"Thursday", tag:"No Cook", tagBg:"#1e3a2f", tagText:"#6fcf97", shop:false,
+      tasks:["Reheat Wed leftovers"],
+      meals:{lunch:"Stuffed Green Peppers (leftover)",dinner:"Sardines/Mackerel with quinoa & greens"}},
+    { day:"Friday", tag:"Cook", tagBg:"#3a3520", tagText:"#e0c560", shop:false,
+      tasks:["Bake Salmon with quinoa & roasted veg"],
+      meals:{lunch:"Light salad or leftovers from Thu",dinner:"Baked Salmon with quinoa & roasted veg"}},
+    { day:"Saturday", tag:"Cook", tagBg:"#3a3520", tagText:"#e0c560", shop:false,
+      tasks:["Sheet Pan Chicken with seasonal veg","Optional: prep anything for Sunday batch"],
+      meals:{lunch:"Salmon leftovers or simple eggs & greens",dinner:"Sheet Pan Chicken with seasonal veg"}}
+  ],
+  grocery: [
+    { name:"Proteins", icon:"🥩", items:["Chicken thighs (bone-in) — ~1.5 kg","Salmon fillets — 2 pieces","Canned sardines or mackerel — 2 tins","Eggs — 1 dozen"] },
+    { name:"Grains & Legumes", icon:"🌾", items:["Brown/green lentils — 300g","Quinoa — 300g","Brown rice (optional) — 300g","Crusty bread / wraps"] },
+    { name:"Vegetables", icon:"🥬", items:["Sweet potatoes — 3–4 medium","Green bell peppers — 4 large","Mixed salad greens — 2 bags","Seasonal roasting veg (carrots, courgette, broccoli)","Onions — 4–5","Garlic — 1 bulb","Tomatoes — 6 or 1 can diced","Spinach or kale — 1 bunch","Lemons — 2"] },
+    { name:"Pantry & Oils", icon:"🫒", items:["Olive oil","Cumin, paprika, turmeric, oregano","Salt & pepper","Vegetable or chicken stock — 500ml","Soy sauce or tamari"] },
+    { name:"Dairy & Other", icon:"🧀", items:["Feta or goat cheese","Greek yogurt (optional)","Nuts/seeds (walnuts, pumpkin seeds)"] }
+  ],
+  recipes: [
+    { name:"Lentil & Sweet Potato Stew", cookDay:"Sunday", time:"45 min", serves:"4–6 portions",
+      steps:["Dice 3 sweet potatoes and 2 onions. Mince 3 cloves garlic.","Heat olive oil in a large pot. Sauté onions 5 min, add garlic 1 min.","Add 300g lentils, diced sweet potato, 1 can diced tomatoes, 500ml stock.","Season with cumin, turmeric, paprika, salt & pepper.","Bring to boil, reduce heat, simmer 30–35 min until lentils are tender.","Stir in a handful of spinach if desired. Adjust seasoning."]},
+    { name:"Roast Chicken Thighs & Veg", cookDay:"Sunday", time:"50 min", serves:"4 portions",
+      steps:["Preheat oven to 200°C / 400°F.","Toss ~1.5kg chicken thighs with olive oil, paprika, oregano, salt & pepper.","Chop seasonal veg (carrots, courgette, broccoli). Toss with olive oil & salt.","Spread chicken and veg on a large baking tray.","Roast 40–45 min until golden and cooked through (75°C internal).","Rest 5 min before serving."]},
+    { name:"Stuffed Green Peppers", cookDay:"Wednesday", time:"40 min", serves:"4 peppers (2 days)",
+      steps:["Preheat oven to 190°C / 375°F.","Halve 4 peppers, remove seeds. Place cut-side up in a baking dish.","Mix cooked quinoa with diced tomato, crumbled feta, spinach, garlic, cumin.","Stuff peppers with the mixture. Drizzle olive oil on top.","Bake 25–30 min until peppers are tender.","Serve with a side salad or steamed greens."]},
+    { name:"Baked Salmon", cookDay:"Friday", time:"25 min", serves:"2 portions",
+      steps:["Preheat oven to 200°C / 400°F.","Place salmon fillets on a lined baking tray.","Season with olive oil, lemon juice, garlic, salt & pepper.","Arrange chopped veg around the salmon.","Bake 15–18 min until salmon flakes easily.","Serve over quinoa with roasted veg."]},
+    { name:"Sheet Pan Chicken", cookDay:"Saturday", time:"40 min", serves:"2–3 portions",
+      steps:["Preheat oven to 200°C / 400°F.","Cut chicken thighs into pieces. Toss with olive oil, soy sauce, garlic, paprika.","Chop seasonal veg into bite-sized pieces. Toss with olive oil.","Spread everything on a large sheet pan in a single layer.","Roast 30–35 min, tossing halfway, until cooked through.","Squeeze lemon juice over before serving."]}
+  ]
+},
+2: {
+  schedule: [
+    { day:"Sunday", tag:"Batch Cook", tagBg:"#4a3728", tagText:"#f0a860", shop:true,
+      tasks:["Grocery shop for the week","Cook Chickpea & Butternut Squash Curry (big batch)","Roast Turkey Thighs with root veg (big batch)","Cook extra rice for Mon–Tue","Prep salad greens"],
+      meals:{lunch:"Roast Turkey Thighs with root veg & rice",dinner:"Chickpea & Butternut Squash Curry with rice"}},
+    { day:"Monday", tag:"No Cook", tagBg:"#1e3a2f", tagText:"#6fcf97", shop:false,
+      tasks:["Reheat leftovers only"],
+      meals:{lunch:"Chickpea Curry over rice (leftover)",dinner:"Turkey Thighs with roasted veg & salad"}},
+    { day:"Tuesday", tag:"No Cook", tagBg:"#1e3a2f", tagText:"#6fcf97", shop:false,
+      tasks:["Reheat leftovers only"],
+      meals:{lunch:"Turkey & veg wrap with arugula",dinner:"Chickpea Curry (last portion) with rice"}},
+    { day:"Wednesday", tag:"Light Cook", tagBg:"#1e2d3d", tagText:"#6bb3e0", shop:false,
+      tasks:["Bake Cod with roasted broccoli & quinoa (double batch)","Quick side of steamed greens"],
+      meals:{lunch:"Egg & avocado on sourdough with mixed greens",dinner:"Baked Cod with roasted broccoli & quinoa"}},
+    { day:"Thursday", tag:"No Cook", tagBg:"#1e3a2f", tagText:"#6fcf97", shop:false,
+      tasks:["Reheat Wed leftovers"],
+      meals:{lunch:"Baked Cod & quinoa bowl (leftover)",dinner:"Leftover cod with salad & sourdough"}},
+    { day:"Friday", tag:"Cook", tagBg:"#3a3520", tagText:"#e0c560", shop:false,
+      tasks:["Cook Miso-Glazed Salmon with bok choy & rice"],
+      meals:{lunch:"Light salad or leftovers from Thu",dinner:"Miso-Glazed Salmon with bok choy & rice"}},
+    { day:"Saturday", tag:"Cook", tagBg:"#3a3520", tagText:"#e0c560", shop:false,
+      tasks:["Make Chicken Stir-Fry with mixed veg","Optional: prep anything for Sunday batch"],
+      meals:{lunch:"Salmon leftovers or eggs & greens",dinner:"Chicken Stir-Fry with mixed veg & rice"}}
+  ],
+  grocery: [
+    { name:"Proteins", icon:"🥩", items:["Turkey thighs — ~1 kg","Chicken breast or thighs — 500g","Salmon fillets — 2 pieces","Cod fillets — 2 pieces","Eggs — 1 dozen"] },
+    { name:"Grains & Legumes", icon:"🌾", items:["Canned chickpeas — 2 tins","Quinoa — 300g","Basmati or brown rice — 500g","Sourdough bread"] },
+    { name:"Vegetables", icon:"🥬", items:["Butternut squash — 1 large","Broccoli — 2 heads","Bok choy — 4 heads","Root veg (carrots, parsnips) — 500g","Mixed salad greens — 2 bags","Onions — 4–5","Garlic — 1 bulb","Ginger — 1 small piece","Avocado — 2","Stir-fry veg (peppers, snap peas, mushrooms)"] },
+    { name:"Pantry & Oils", icon:"🫒", items:["Olive oil","Coconut milk — 1 can","White miso paste","Soy sauce or tamari","Cumin, turmeric, garam masala","Salt & pepper","Chicken stock — 500ml","Sesame oil"] },
+    { name:"Dairy & Other", icon:"🧀", items:["Greek yogurt (optional)","Sesame seeds","Lime — 2","Lemon — 1"] }
+  ],
+  recipes: [
+    { name:"Chickpea & Butternut Squash Curry", cookDay:"Sunday", time:"45 min", serves:"4–6 portions",
+      steps:["Dice 1 large butternut squash and 2 onions. Mince garlic & ginger.","Heat olive oil in a large pot. Sauté onions 5 min, add garlic & ginger 1 min.","Add cumin, turmeric, garam masala. Stir 30 seconds.","Add squash, 2 tins chickpeas (drained), 1 can coconut milk, 250ml stock.","Simmer 25–30 min until squash is tender.","Season to taste. Serve over rice."]},
+    { name:"Roast Turkey Thighs & Root Veg", cookDay:"Sunday", time:"55 min", serves:"4 portions",
+      steps:["Preheat oven to 200°C / 400°F.","Season turkey thighs with olive oil, paprika, thyme, salt & pepper.","Chop carrots and parsnips into chunks. Toss with olive oil.","Spread turkey and veg on a baking tray.","Roast 45–50 min until turkey is cooked through (75°C internal).","Rest 5 min before serving."]},
+    { name:"Baked Cod with Broccoli & Quinoa", cookDay:"Wednesday", time:"30 min", serves:"4 portions (2 days)",
+      steps:["Preheat oven to 200°C / 400°F.","Place cod fillets on a lined tray. Season with olive oil, lemon, garlic, salt.","Cut broccoli into florets. Toss with olive oil and spread around cod.","Bake 15–18 min until cod flakes easily.","Cook quinoa per package instructions.","Serve cod and broccoli over quinoa with lemon wedge."]},
+    { name:"Miso-Glazed Salmon", cookDay:"Friday", time:"20 min", serves:"2 portions",
+      steps:["Mix 2 tbsp white miso, 1 tbsp soy sauce, 1 tsp sesame oil, 1 tsp honey.","Spread glaze over salmon fillets. Let sit 10 min.","Preheat oven to 200°C / 400°F.","Bake salmon 12–15 min until cooked through.","Meanwhile, sauté bok choy in sesame oil with garlic, 3–4 min.","Serve salmon over rice with bok choy."]},
+    { name:"Chicken Stir-Fry", cookDay:"Saturday", time:"25 min", serves:"2–3 portions",
+      steps:["Slice chicken breast into thin strips. Season with soy sauce.","Heat sesame oil in a wok or large pan over high heat.","Cook chicken 4–5 min until browned. Remove and set aside.","Add sliced peppers, snap peas, mushrooms. Stir-fry 3–4 min.","Return chicken. Add 2 tbsp soy sauce, 1 tsp sesame oil.","Serve over rice. Top with sesame seeds."]}
+  ]
+},
+3: {
+  schedule: [
+    { day:"Sunday", tag:"Batch Cook", tagBg:"#4a3728", tagText:"#f0a860", shop:true,
+      tasks:["Grocery shop for the week","Cook Black Bean & Sweet Potato Chili (big batch)","Herb-Roast Chicken with cauliflower & carrots (big batch)","Cook extra quinoa for the week","Prep salad greens & dressings"],
+      meals:{lunch:"Herb-Roast Chicken with cauliflower & carrots",dinner:"Black Bean & Sweet Potato Chili with quinoa"}},
+    { day:"Monday", tag:"No Cook", tagBg:"#1e3a2f", tagText:"#6fcf97", shop:false,
+      tasks:["Reheat leftovers only"],
+      meals:{lunch:"Black Bean Chili over quinoa (leftover)",dinner:"Roast Chicken with cauliflower & salad"}},
+    { day:"Tuesday", tag:"No Cook", tagBg:"#1e3a2f", tagText:"#6fcf97", shop:false,
+      tasks:["Reheat leftovers only"],
+      meals:{lunch:"Chicken & roasted veg wrap",dinner:"Black Bean Chili (last portion) with quinoa"}},
+    { day:"Wednesday", tag:"Light Cook", tagBg:"#1e2d3d", tagText:"#6bb3e0", shop:false,
+      tasks:["Make Stuffed Portobello Mushrooms with quinoa & spinach (double batch)","Prep side salad"],
+      meals:{lunch:"Tuna & white bean salad with lemon dressing",dinner:"Stuffed Portobello Mushrooms with side salad"}},
+    { day:"Thursday", tag:"No Cook", tagBg:"#1e3a2f", tagText:"#6fcf97", shop:false,
+      tasks:["Reheat Wed leftovers"],
+      meals:{lunch:"Stuffed Mushrooms (leftover) with greens",dinner:"Leftover mushrooms with quinoa & arugula"}},
+    { day:"Friday", tag:"Cook", tagBg:"#3a3520", tagText:"#e0c560", shop:false,
+      tasks:["Pan-sear Cod with wild rice & asparagus"],
+      meals:{lunch:"Light salad or leftovers from Thu",dinner:"Pan-Seared Cod with wild rice & asparagus"}},
+    { day:"Saturday", tag:"Cook", tagBg:"#3a3520", tagText:"#e0c560", shop:false,
+      tasks:["Make Turkey Meatballs with zucchini & marinara","Optional: prep anything for Sunday batch"],
+      meals:{lunch:"Cod leftovers or eggs & toast",dinner:"Turkey Meatballs with zucchini & marinara"}}
+  ],
+  grocery: [
+    { name:"Proteins", icon:"🥩", items:["Whole chicken or chicken pieces — ~1.5 kg","Ground turkey — 500g","Cod fillets — 2 pieces","Canned tuna — 1 tin","Eggs — 1 dozen"] },
+    { name:"Grains & Legumes", icon:"🌾", items:["Canned black beans — 2 tins","Canned white beans — 1 tin","Quinoa — 400g","Wild rice — 200g","Crusty bread / wraps"] },
+    { name:"Vegetables", icon:"🥬", items:["Sweet potatoes — 3 medium","Cauliflower — 1 large head","Portobello mushrooms — 8 large","Asparagus — 1 bunch","Zucchini — 3 medium","Carrots — 4 large","Onions — 4–5","Garlic — 1 bulb","Spinach — 1 large bunch","Arugula — 1 bag","Tomatoes — 4 or 1 can crushed","Lemons — 2"] },
+    { name:"Pantry & Oils", icon:"🫒", items:["Olive oil","Cumin, chili powder, smoked paprika, oregano","Dried thyme, rosemary","Salt & pepper","Chicken stock — 500ml","Marinara / passata sauce — 1 jar","Balsamic vinegar"] },
+    { name:"Dairy & Other", icon:"🧀", items:["Parmesan cheese","Mozzarella (for mushrooms, optional)","Walnuts","Pumpkin seeds"] }
+  ],
+  recipes: [
+    { name:"Black Bean & Sweet Potato Chili", cookDay:"Sunday", time:"50 min", serves:"4–6 portions",
+      steps:["Dice 3 sweet potatoes and 2 onions. Mince 4 cloves garlic.","Heat olive oil in a large pot. Sauté onions 5 min, add garlic 1 min.","Add cumin, chili powder, smoked paprika. Stir 30 seconds.","Add sweet potato, 2 tins black beans (drained), crushed tomatoes, 250ml stock.","Bring to boil, reduce heat, simmer 30–35 min until sweet potato is tender.","Season to taste. Serve over quinoa."]},
+    { name:"Herb-Roast Chicken & Veg", cookDay:"Sunday", time:"60 min", serves:"4 portions",
+      steps:["Preheat oven to 200°C / 400°F.","Rub chicken with olive oil, thyme, rosemary, garlic, salt & pepper.","Cut cauliflower into florets and carrots into chunks. Toss with olive oil.","Arrange chicken and veg on a large roasting tray.","Roast 45–55 min until chicken is golden and cooked through.","Rest 10 min. Carve and serve with veg."]},
+    { name:"Stuffed Portobello Mushrooms", cookDay:"Wednesday", time:"35 min", serves:"8 mushrooms (2 days)",
+      steps:["Preheat oven to 190°C / 375°F.","Remove stems from 8 portobello mushrooms. Place gill-side up on a tray.","Mix cooked quinoa with sautéed spinach, garlic, sun-dried tomatoes, salt.","Fill each mushroom cap with the quinoa mixture.","Top with mozzarella or parmesan if desired.","Bake 20–25 min until mushrooms are tender."]},
+    { name:"Pan-Seared Cod", cookDay:"Friday", time:"30 min", serves:"2 portions",
+      steps:["Cook wild rice per package instructions (about 40 min — start first).","Trim asparagus. Toss with olive oil, salt. Roast at 200°C for 12 min.","Pat cod dry. Season with salt, pepper, paprika.","Heat olive oil in a pan over medium-high. Sear cod 3–4 min per side.","Squeeze lemon over the cod.","Serve cod over wild rice with roasted asparagus."]},
+    { name:"Turkey Meatballs & Zucchini", cookDay:"Saturday", time:"35 min", serves:"2–3 portions",
+      steps:["Mix 500g ground turkey with 1 egg, garlic, oregano, salt, pepper, breadcrumbs.","Form into golf-ball-sized meatballs (about 12).","Heat olive oil in a pan. Brown meatballs on all sides, about 8 min.","Slice zucchini into rounds or ribbons.","Add marinara sauce to the pan. Nestle meatballs in. Simmer 15 min.","Sauté zucchini separately with garlic and olive oil. Serve together."]}
+  ]
+},
+4: {
+  schedule: [
+    { day:"Sunday", tag:"Batch Cook", tagBg:"#4a3728", tagText:"#f0a860", shop:true,
+      tasks:["Grocery shop for the week","Cook White Bean & Kale Soup (big batch)","Make Teriyaki Chicken Thighs with roasted veg (big batch)","Cook extra rice for Mon–Tue","Prep salad greens"],
+      meals:{lunch:"Teriyaki Chicken Thighs with roasted veg & rice",dinner:"White Bean & Kale Soup with crusty bread"}},
+    { day:"Monday", tag:"No Cook", tagBg:"#1e3a2f", tagText:"#6fcf97", shop:false,
+      tasks:["Reheat leftovers only"],
+      meals:{lunch:"White Bean & Kale Soup (leftover)",dinner:"Teriyaki Chicken with rice & salad"}},
+    { day:"Tuesday", tag:"No Cook", tagBg:"#1e3a2f", tagText:"#6fcf97", shop:false,
+      tasks:["Reheat leftovers only"],
+      meals:{lunch:"Teriyaki Chicken rice bowl with pickled veg",dinner:"White Bean & Kale Soup (last portion)"}},
+    { day:"Wednesday", tag:"Light Cook", tagBg:"#1e2d3d", tagText:"#6bb3e0", shop:false,
+      tasks:["Make Veggie & Egg Frittata with mixed greens (double batch)","Quick side salad"],
+      meals:{lunch:"Sardines on toast with avocado & arugula",dinner:"Veggie & Egg Frittata with mixed salad"}},
+    { day:"Thursday", tag:"No Cook", tagBg:"#1e3a2f", tagText:"#6fcf97", shop:false,
+      tasks:["Reheat Wed leftovers"],
+      meals:{lunch:"Frittata slice (leftover) with salad",dinner:"Frittata with sourdough & greens"}},
+    { day:"Friday", tag:"Cook", tagBg:"#3a3520", tagText:"#e0c560", shop:false,
+      tasks:["Bake Mackerel with roasted beets & quinoa"],
+      meals:{lunch:"Light salad or leftovers from Thu",dinner:"Baked Mackerel with roasted beets & quinoa"}},
+    { day:"Saturday", tag:"Cook", tagBg:"#3a3520", tagText:"#e0c560", shop:false,
+      tasks:["Make Coconut Chicken Curry with rice","Optional: prep anything for Sunday batch"],
+      meals:{lunch:"Mackerel leftovers or eggs & toast",dinner:"Coconut Chicken Curry with rice"}}
+  ],
+  grocery: [
+    { name:"Proteins", icon:"🥩", items:["Chicken thighs (boneless) — ~1 kg","Whole mackerel or fillets — 2","Canned sardines — 2 tins","Eggs — 1.5 dozen"] },
+    { name:"Grains & Legumes", icon:"🌾", items:["Canned white/cannellini beans — 2 tins","Quinoa — 300g","Basmati or brown rice — 500g","Sourdough bread"] },
+    { name:"Vegetables", icon:"🥬", items:["Kale — 1 large bunch","Beetroot — 4 medium","Mixed bell peppers — 3","Zucchini — 2","Cherry tomatoes — 1 punnet","Onions — 4–5","Garlic — 1 bulb","Ginger — 1 small piece","Avocado — 2","Arugula — 1 bag","Mixed salad greens — 1 bag","Lemons — 2","Lime — 1"] },
+    { name:"Pantry & Oils", icon:"🫒", items:["Olive oil","Coconut milk — 1 can","Soy sauce or tamari","Honey or maple syrup","Rice vinegar","Sesame oil","Curry powder, turmeric, cumin","Salt & pepper","Chicken stock — 750ml"] },
+    { name:"Dairy & Other", icon:"🧀", items:["Goat cheese or feta (for frittata)","Greek yogurt (optional)","Walnuts","Sesame seeds"] }
+  ],
+  recipes: [
+    { name:"White Bean & Kale Soup", cookDay:"Sunday", time:"40 min", serves:"4–6 portions",
+      steps:["Dice 2 onions and 3 celery stalks. Mince 4 cloves garlic.","Heat olive oil in a large pot. Sauté onions & celery 5 min, add garlic 1 min.","Add 2 tins white beans (drained), 750ml stock, salt & pepper.","Bring to boil, reduce heat, simmer 20 min.","Strip kale from stems, chop roughly. Stir into soup for last 5 min.","Season to taste. Drizzle olive oil to serve."]},
+    { name:"Teriyaki Chicken Thighs", cookDay:"Sunday", time:"45 min", serves:"4 portions",
+      steps:["Mix 3 tbsp soy sauce, 1 tbsp honey, 1 tsp sesame oil, minced garlic & ginger.","Marinate chicken thighs in the mixture for 15 min (or longer).","Preheat oven to 200°C / 400°F.","Chop bell peppers and zucchini. Toss with olive oil.","Place chicken and veg on a baking tray. Pour marinade over chicken.","Roast 30–35 min until chicken is caramelised and cooked through."]},
+    { name:"Veggie & Egg Frittata", cookDay:"Wednesday", time:"30 min", serves:"6–8 slices (2 days)",
+      steps:["Preheat oven to 180°C / 350°F.","Sauté diced peppers, zucchini, and onion in an oven-safe pan, 5 min.","Whisk 10 eggs with salt, pepper, and crumbled goat cheese.","Pour eggs over the veg in the pan. Scatter cherry tomatoes on top.","Cook on stovetop 3 min until edges set.","Transfer to oven. Bake 15–18 min until golden and set in centre."]},
+    { name:"Baked Mackerel with Beets", cookDay:"Friday", time:"40 min", serves:"2 portions",
+      steps:["Preheat oven to 200°C / 400°F.","Peel and dice beetroot into wedges. Toss with olive oil, salt. Roast 25 min.","Season mackerel with olive oil, lemon, garlic, salt & pepper.","Add mackerel to the tray with beets. Roast another 12–15 min.","Cook quinoa per package instructions.","Serve mackerel over quinoa with roasted beets and lemon."]},
+    { name:"Coconut Chicken Curry", cookDay:"Saturday", time:"35 min", serves:"2–3 portions",
+      steps:["Dice chicken thighs into bite-sized pieces. Season with curry powder, salt.","Heat olive oil in a pan. Brown chicken 5 min. Remove and set aside.","Sauté diced onion, garlic, ginger in the same pan, 3 min.","Add curry powder, turmeric, cumin. Stir 30 seconds.","Pour in 1 can coconut milk. Return chicken. Simmer 15 min.","Season with lime juice and salt. Serve over rice."]}
+  ]
+}
+};
+
+const nutrients = [
+  { name:"Folate", sources:"Lentils, kale, spinach, black beans, chickpeas, arugula" },
+  { name:"Omega-3s", sources:"Salmon, sardines, mackerel, walnuts" },
+  { name:"Zinc", sources:"Chicken, turkey, pumpkin seeds, lentils, chickpeas" },
+  { name:"Iron", sources:"Lentils, black beans, spinach, kale, quinoa" },
+  { name:"Vitamin D", sources:"Salmon, sardines, mackerel, eggs" },
+  { name:"Vitamin B12", sources:"Salmon, mackerel, sardines, eggs, chicken, turkey" },
+  { name:"Vitamin C", sources:"Bell peppers, tomatoes, lemon, kale, broccoli" },
+  { name:"Vitamin E", sources:"Nuts, seeds, olive oil, avocado" },
+  { name:"Selenium", sources:"Eggs, chicken, turkey, brown rice" },
+  { name:"Choline", sources:"Eggs, chicken, cod, salmon" },
+  { name:"Antioxidants", sources:"Beets, berries, kale, sweet potato, colourful peppers" },
+  { name:"Fiber", sources:"Lentils, black beans, chickpeas, sweet potato, quinoa" }
+];
+
+let currentWeek = 1;
+let currentTab = "schedule";
+let checkedItems = {};
+
+function switchWeek(w) {
+  currentWeek = w;
+  checkedItems = {};
+  document.querySelectorAll('.week-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.week) === w);
+  });
+  render();
+}
+
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
+    currentTab = btn.dataset.tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById(btn.dataset.tab).classList.add('active');
+    render();
   });
 });
 
-// Expandable cards
+function render() {
+  const el = document.getElementById('app-content');
+  const week = WEEKS[currentWeek];
+  if (currentTab === 'schedule') el.innerHTML = renderSchedule(week.schedule);
+  else if (currentTab === 'grocery') el.innerHTML = renderGrocery(week.grocery);
+  else if (currentTab === 'recipes') el.innerHTML = renderRecipes(week.recipes);
+  else if (currentTab === 'nutrients') el.innerHTML = renderNutrients();
+}
+
+function renderSchedule(days) {
+  return days.map((d, i) => `
+    <div class="card">
+      <button class="card-header" onclick="toggleCard(this)">
+        <div>
+          <div class="day-name">${d.day}</div>
+          <span class="tag" style="background:${d.tagBg};color:${d.tagText}">${d.tag}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${d.shop ? '<span class="shop-tag">🛒 Shop</span>' : ''}
+          <span class="arrow">▼</span>
+        </div>
+      </button>
+      <div class="card-body">
+        <div class="section-label">Tasks</div>
+        ${d.tasks.map(t => `<div class="task-item"><span class="task-dot">•</span>${t}</div>`).join('')}
+        <div class="section-label">Meals</div>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">${d.meals.lunch}</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">${d.meals.dinner}</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderGrocery(cats) {
+  const total = cats.reduce((s, c) => s + c.items.length, 0);
+  const checked = Object.keys(checkedItems).filter(k => k.startsWith('w'+currentWeek) && checkedItems[k]).length;
+  return `
+    <div class="progress-bar">
+      <span>Shopping progress</span>
+      <span class="count">${checked} / ${total} items</span>
+    </div>
+    ${cats.map(cat => `
+      <div class="card">
+        <div class="grocery-cat-header">${cat.icon} ${cat.name}</div>
+        ${cat.items.map((item, i) => {
+          const key = 'w'+currentWeek+'-'+cat.name+'-'+i;
+          const ch = checkedItems[key];
+          return `<button class="grocery-item" onclick="toggleGrocery('${key}', this)">
+            <div class="checkbox ${ch ? 'checked' : ''}">${ch ? '✓' : ''}</div>
+            <span class="grocery-text ${ch ? 'checked' : ''}">${item}</span>
+          </button>`;
+        }).join('')}
+      </div>
+    `).join('')}
+  `;
+}
+
+function renderRecipes(recs) {
+  return recs.map(r => `
+    <div class="card">
+      <button class="card-header" onclick="toggleCard(this)">
+        <div>
+          <div class="day-name">${r.name}</div>
+          <div class="recipe-meta">
+            <span>📅 ${r.cookDay}</span>
+            <span>⏱ ${r.time}</span>
+            <span>🍽 ${r.serves}</span>
+          </div>
+        </div>
+        <span class="arrow">▼</span>
+      </button>
+      <div class="card-body">
+        ${r.steps.map((s, i) => `<div class="step"><span class="step-num">${i+1}</span><span class="step-text">${s}</span></div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderNutrients() {
+  return `
+    <p style="font-size:11px;color:var(--textMuted);margin-bottom:12px">Key nutrients covered across all 4 weeks.</p>
+    ${nutrients.map(n => `
+      <div class="card" style="margin-bottom:8px">
+        <div style="padding:12px 16px">
+          <div class="nutrient-name">${n.name}</div>
+          <div class="nutrient-src">${n.sources}</div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
 function toggleCard(header) {
   const body = header.nextElementSibling;
   const arrow = header.querySelector('.arrow');
@@ -358,25 +404,13 @@ function toggleCard(header) {
   arrow.textContent = isOpen ? '▼' : '▲';
 }
 
-// Grocery checkboxes
-let checkedCount = 0;
-const totalItems = document.querySelectorAll('.grocery-item').length;
-
-function toggleGrocery(btn) {
-  const cb = btn.querySelector('.checkbox');
-  const txt = btn.querySelector('.grocery-text');
-  const isChecked = cb.classList.contains('checked');
-  cb.classList.toggle('checked');
-  txt.classList.toggle('checked');
-  if (isChecked) {
-    cb.textContent = '';
-    checkedCount--;
-  } else {
-    cb.textContent = '✓';
-    checkedCount++;
-  }
-  document.getElementById('grocery-count').textContent = checkedCount + ' / ' + totalItems + ' items';
+function toggleGrocery(key, btn) {
+  checkedItems[key] = !checkedItems[key];
+  render();
 }
+
+// Initial render
+render();
 </script>
 
 </body>
